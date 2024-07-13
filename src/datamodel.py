@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-from datetime import timedelta
 
 class Season(Enum):
     WINTER = 0
@@ -16,6 +15,7 @@ class FoodType(Enum):
     SPICE = 4 
     DIARY = 5
     FISH = 6
+    SAUCE = 7
 
 class Meal(Enum):
     BREAKFAST = 0
@@ -46,19 +46,27 @@ class Ingredient:
 
 class Recipe:
     """Recipe for 1 person""" 
-    def __init__(self, name:str, meal:Meal, typical_season: Season, prep_time:timedelta, cold:bool = False) -> None:
+    def __init__(self, name:str, meals:list[Meal], typical_seasons: list[Season], prep_time_min:int, cold:bool = False, ingredients:list[Ingredient]=[]) -> None:
     
         self.name = name
-        self.ingredients: list[Ingredient] = []
-        self.meal: Meal = meal
+        self.ingredients: list[Ingredient] = ingredients
+        self.meals: list[Meal] = meals
         self.score: int = 0
         self.cold: bool = cold
-        self.typical_season: Season = typical_season
-        self.prep_time: timedelta = prep_time
+        self.seasons:list[Season] = typical_seasons
+        self.prep_time_min: int = prep_time_min
 
-    def for_N_people(self, n:int)->list[Ingredient]:
+    def __repr__(self) -> str:
+        ingredients = [f'{i.food.name}: {i.quantity_1person}g' for i in self.ingredients ]
+        return f'Recipe: {self.name}\nIngredients: {ingredients}'
+    
+    def add_ingredient(self, ing:Ingredient):
+        self.ingredients.append(ing)
+
+    
+    def for_N_people(self, n:int)->list[(str,float)]:
         """Calculate quantities for N people"""
-        pass
+        return [(i.food.name,n*i.quantity_1person) for i in self.ingredients]
 
 
 
